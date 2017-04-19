@@ -1,5 +1,9 @@
 <?php
-
+/**
+* Dieses Panel wurde von MrNeta Entwickelt // https://github.com/MrNeta/nsysarmalifepanel
+* Veröffentlicht unter der GPL-3.0 // https://github.com/MrNeta/nsysarmalifepanel/blob/master/LICENSE
+* Web: https://nsys.pw/
+*/
 define("mysql_host", "localhost"); // Datenbank Adresse
 define("mysql_user", ""); // Datenbank Benutzer
 define("mysql_pw", ""); // Datenbank Passwort

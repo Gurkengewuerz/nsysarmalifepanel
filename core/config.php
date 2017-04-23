@@ -17,4 +17,13 @@ define("site_version", "v1.0");
 define("cop_ranks", "7"); // Maximale Polizei Ränge
 define("medic_ranks", "7"); // Maximale Medic bzw. EMS Ränge
 
-$pdo = new PDO('mysql:host='.mysql_host.';dbname='.mysql_db, mysql_user, mysql_pw);
+try
+{
+    $pdo = new PDO('mysql:host='.mysql_host.';dbname='.mysql_db, mysql_user, mysql_pw);
+}
+catch (PDOException $e)
+{
+    $mysql_connect = 0;
+    $mysql_msg = $e->getMessage();
+
+}

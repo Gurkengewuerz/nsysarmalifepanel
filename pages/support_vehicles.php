@@ -51,12 +51,12 @@ if(!GetPanelUserSteam($_SESSION['steamid'])['vs'] == 1){header("Location: ?page=
                                 ?>
                                 <tr>
                                     <td><a href="?page=support_player&id=<?php echo $owner['uid']; ?>"><?php echo utf8_encode($owner['name']); ?></a></td>
-                                    <td><?php echo $row['classname']; ?></td>
-                                    <td><?php echo $row['type']; ?></td>
+                                    <td><?php echo ParseVehicleName($row['classname']); ?></td>
+                                    <td><?php echo $row['type']." ".ParseVehicleTyp($row['type']); ?></td>
                                     <td><?php echo ParseSide($row['side']); ?></td>
                                     <td><?php echo $row['plate']; ?></td>
                                     <td id="vehstat<?php echo $row['id']; ?>"><?php if($row['alive'] == 1){echo '<button onclick="RepairVehicle('.$row['id'].', 0)" class="btn btn-success btn-xs">Ganz</button>';}else{echo '<button onclick="RepairVehicle('.$row['id'].', 1)" class="btn btn-danger btn-xs">Zerstört</button>';} ?></td>
-                                    <td><?php if($row['active'] == 1){echo '<span class="label label-warning">Ausgeparkt</span>';}else{echo '<span class="label label-success">Eingeparkt</span>';} ?></td>
+                                    <td id="vehgar<?php echo $row['id']; ?>"><?php if($row['active'] == 1){echo '<button onclick="GarageVehicle('.$row['id'].', 0)" class="btn btn-warning btn-xs">Ausgeparkt</button>';}else{echo '<button onclick="GarageVehicle('.$row['id'].', 1)" class="btn btn-success btn-xs">Eingeparkt</button>';} ?></td>
                                 </tr>
                                 <?php } ?>
                                 </tbody>
@@ -93,6 +93,27 @@ if(!GetPanelUserSteam($_SESSION['steamid'])['vs'] == 1){header("Location: ?page=
                     $("#vehstat" + id).html('<button onclick="RepairVehicle(' + id + ', 0)" class="btn btn-success btn-xs">Ganz</button>');
                 }else{
                     $("#vehstat" + id).html('<button onclick="RepairVehicle(' + id + ', 1)" class="btn btn-danger btn-xs">Zerstört</button>');
+                }
+            }
+        });
+        <?php } ?>
+    }
+    function GarageVehicle(id, status){
+        <?php if(GetPanelUserSteam($_SESSION['steamid'])['ve'] == 1){ ?>
+        $.ajax({
+            type: 'POST',
+            url: 'index.php',
+            data: {
+                'javadata': 'support_vehicle_garage',
+                'status': status,
+                'id': id
+            },
+            success: function(){
+                //alert(data);
+                if(status == 1){
+                    $("#vehgar" + id).html('<button onclick="GarageVehicle(' + id + ', 0)" class="btn btn-warning btn-xs">Ausgeparkt</button>');
+                }else{
+                    $("#vehgar" + id).html('<button onclick="GarageVehicle(' + id + ', 1)" class="btn btn-success btn-xs">Eingeparkt</button>');
                 }
             }
         });

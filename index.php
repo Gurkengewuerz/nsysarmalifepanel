@@ -33,19 +33,24 @@ if(!isset($_SESSION['steamid'])) {
 
 
 if(!isset($_SESSION['steamid'])) {
-echo "<body class='login-page animated bounceInDown' style='background: url(http://www.more-gaming.eu/images/home-bg.jpg) no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;'>";
+echo "<body class='login-page animated bounceInDown login-page'>";
     echo '
     <div class="login-box">
   
   <!-- /.login-logo -->
   <div class="login-box-body text-center">
     <div class="login-logo">
-    <b>More</b> Gaming
-  </div>
-    <p class="login-box-msg">Melde dich mit Steam an</p>
+    '.site_name.'
+  </div>';
+
+    if(!isset($mysql_connect)) {
+        echo '<p class="login-box-msg">Melde dich mit Steam an</p>
 
     ';
-    echo loginbutton();
+        echo loginbutton();
+    }else{
+        echo '<label>MySQL Fehler</label><div class="alert alert-danger" role="alert">'.$mysql_msg.'</div>';
+    }
     echo '
 
   </div>

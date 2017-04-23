@@ -145,6 +145,8 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                 <table class="table table-responsive table-bordered table-striped table-hover">
                                     <thead>
                                     <th>Position</th>
+                                    <th>In Besitz</th>
+                                    <th>Garage</th>
                                     <th>Aktionen</th>
                                     </thead>
                                     <tbody>
@@ -156,7 +158,9 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                     ?>
                                     <tr>
                                         <td><?php echo $row['pos']; ?></td>
-                                        <td>-</td>
+                                        <td><?php if($row['owned'] == 1){echo '<span class="label label-success">Ja</span>';}else{echo '<span class="label label-danger">Nein</span>';} ?></td>
+                                        <td><?php if($row['garage'] == 1){echo '<span class="label label-success">Ja</span>';}else{echo '<span class="label label-danger">Nein</span>';} ?></td>
+                                        <td><a href="?page=support_containers&pid=<?php echo $row['pid']; ?>" class="btn btn-primary btn-xs">Anzeigen</a></td>
                                     </tr>
                                     <?php } ?>
                                     </tbody>
@@ -171,6 +175,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                         <th>Typ</th>
                                         <th>Fraktion</th>
                                         <th>Status</th>
+                                        <th>Garage</th>
                                     </thead>
                                     <tbody>
                                     <?php
@@ -180,9 +185,10 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                     while($row = $statement->fetch()) {
                                         ?>
                                         <tr><td><?php echo ParseVehicleName($row['classname']); ?></td>
-                                            <td><?php echo $row['type']; ?></td>
+                                            <td><?php echo ParseVehicleTyp($row['type']); ?></td>
                                             <td><?php echo ParseSide($row['side']); ?></td>
                                             <td id="vehstat<?php echo $row['id']; ?>"><?php if($row['alive'] == 1){echo '<button onclick="RepairVehicle('.$row['id'].', 0)" class="btn btn-success btn-xs">Ganz</button>';}else{echo '<button onclick="RepairVehicle('.$row['id'].', 1)" class="btn btn-danger btn-xs">Zerstört</button>';} ?></td>
+                                            <td id="vehgar<?php echo $row['id']; ?>"><?php if($row['active'] == 1){echo '<button onclick="GarageVehicle('.$row['id'].', 0)" class="btn btn-warning btn-xs">Ausgeparkt</button>';}else{echo '<button onclick="GarageVehicle('.$row['id'].', 1)" class="btn btn-success btn-xs">Eingeparkt</button>';} ?></td>
                                         </tr>
                                     <?php } ?>
                                     </tbody>
@@ -257,6 +263,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                         <div class="col-md-4">
                                             <h1>Whitelistung Fraktionen</h1>
                                             <button onclick="SwitchPermission(this, 'wc', '')" class="btn <?php RightStatus($PanelUser['wc']); ?> btn-block">Polizei</button></br>
+                                            <button onclick="SwitchPermission(this, 'wj')" class="btn <?php RightStatus($PanelUser['wj']); ?> btn-block">Justiz</button></br>
                                             <button onclick="SwitchPermission(this, 'wm')" class="btn <?php RightStatus($PanelUser['wm']); ?> btn-block">EMS</button></br>
                                         </div>
                                         <div class="col-md-4">
@@ -318,29 +325,35 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                 <div class="form-group">
                     <label>Cop Level</label>
                     <select id="usercop" class="form-control">
-                        <?php
-                        foreach(range(0, cop_ranks) as $rank){
-                            if($player['coplevel'] == $rank){
-                                echo '<option value="'.$rank.'" selected>'.$rank.'</option>';
-                            }else{
-                                echo '<option value="'.$rank.'">'.$rank.'</option>';
-                            }
-                        }
-                        ?>
+                        <option value="0" <?php if($player['coplevel'] == 0){echo "selected";} ?>>0</option>
+                        <option value="1" <?php if($player['coplevel'] == 1){echo "selected";} ?>>1 - Justiz</option>
+                        <option value="2" <?php if($player['coplevel'] == 2){echo "selected";} ?>>2 - FBI</option>
+                        <option value="3" <?php if($player['coplevel'] == 3){echo "selected";} ?>>3</option>
+                        <option value="4" <?php if($player['coplevel'] == 4){echo "selected";} ?>>4</option>
+                        <option value="5" <?php if($player['coplevel'] == 5){echo "selected";} ?>>5</option>
+                        <option value="6" <?php if($player['coplevel'] == 6){echo "selected";} ?>>6</option>
+                        <option value="7" <?php if($player['coplevel'] == 7){echo "selected";} ?>>7</option>
+                        <option value="8" <?php if($player['coplevel'] == 8){echo "selected";} ?>>8</option>
+                        <option value="9" <?php if($player['coplevel'] == 9){echo "selected";} ?>>9</option>
+                        <option value="10" <?php if($player['coplevel'] == 10){echo "selected";} ?>>10</option>
+                        <option value="11" <?php if($player['coplevel'] == 11){echo "selected";} ?>>11</option>
+                        <option value="12" <?php if($player['coplevel'] == 12){echo "selected";} ?>>12</option>
+                        <option value="13" <?php if($player['coplevel'] == 13){echo "selected";} ?>>13</option>
+                        <option value="14" <?php if($player['coplevel'] == 14){echo "selected";} ?>>14</option>
+                        <option value="15" <?php if($player['coplevel'] == 15){echo "selected";} ?>>15</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Medic Level</label>
                     <select id="usermedic" class="form-control">
-                        <?php
-                        foreach(range(0, medic_ranks) as $rank){
-                            if($player['mediclevel'] == $rank){
-                                echo '<option value="'.$rank.'" selected>'.$rank.'</option>';
-                            }else{
-                                echo '<option value="'.$rank.'">'.$rank.'</option>';
-                            }
-                        }
-                        ?>
+                        <option value="0" <?php if($player['mediclevel'] == 0){echo "selected";} ?>>0</option>
+                        <option value="1" <?php if($player['mediclevel'] == 1){echo "selected";} ?>>1</option>
+                        <option value="2" <?php if($player['mediclevel'] == 2){echo "selected";} ?>>2</option>
+                        <option value="3" <?php if($player['mediclevel'] == 3){echo "selected";} ?>>3</option>
+                        <option value="4" <?php if($player['mediclevel'] == 4){echo "selected";} ?>>4</option>
+                        <option value="5" <?php if($player['mediclevel'] == 5){echo "selected";} ?>>5</option>
+                        <option value="6" <?php if($player['mediclevel'] == 6){echo "selected";} ?>>6</option>
+                        <option value="7" <?php if($player['mediclevel'] == 7){echo "selected";} ?>>7</option>
                     </select>
                 </div>
             </div>
@@ -426,6 +439,28 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                     $("#vehstat" + id).html('<button onclick="RepairVehicle(' + id + ', 0)" class="btn btn-success btn-xs">Ganz</button>');
                 }else{
                     $("#vehstat" + id).html('<button onclick="RepairVehicle(' + id + ', 1)" class="btn btn-danger btn-xs">Zerstört</button>');
+                }
+            }
+        });
+        <?php } ?>
+    }
+
+    function GarageVehicle(id, status){
+        <?php if(GetPanelUserSteam($_SESSION['steamid'])['ve'] == 1){ ?>
+        $.ajax({
+            type: 'POST',
+            url: 'index.php',
+            data: {
+                'javadata': 'support_vehicle_garage',
+                'status': status,
+                'id': id
+            },
+            success: function(){
+                //alert(data);
+                if(status == 1){
+                    $("#vehgar" + id).html('<button onclick="GarageVehicle(' + id + ', 0)" class="btn btn-warning btn-xs">Ausgeparkt</button>');
+                }else{
+                    $("#vehgar" + id).html('<button onclick="GarageVehicle(' + id + ', 1)" class="btn btn-success btn-xs">Eingeparkt</button>');
                 }
             }
         });

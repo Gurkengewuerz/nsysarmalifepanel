@@ -1,5 +1,6 @@
 <?php if(isset($access)){if(!$access == true){exit;}}else{exit;}
 if(!GetPanelUserSteam($_SESSION['steamid'])['hs'] == 1){header("Location: ?page=support_dashboard"); exit;}
+if(!isset($_GET['pid']) OR $_GET['pid'] == ""){header("Location: ?page=support_houses"); exit;}
 ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -11,12 +12,12 @@ if(!GetPanelUserSteam($_SESSION['steamid'])['hs'] == 1){header("Location: ?page=
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Hausliste
+                Behälterliste
                 <small>Support</small>
             </h1>
             <ol class="breadcrumb">
                 <li><a href="?page=support_dashboard"><i class="fa fa-dashboard"></i> Support</a></li>
-                <li class="active">Hausliste</li>
+                <li class="active">Behälterliste</li>
             </ol>
         </section>
 
@@ -27,7 +28,7 @@ if(!GetPanelUserSteam($_SESSION['steamid'])['hs'] == 1){header("Location: ?page=
 
                     <div class="box">
                         <div class="box-header">
-                            <h3 class="box-title">Hausliste</h3>
+                            <h3 class="box-title">Behälterliste</h3>
                         </div>
                         <!-- /.box-header -->
                         <div class="box-body">
@@ -37,24 +38,26 @@ if(!GetPanelUserSteam($_SESSION['steamid'])['hs'] == 1){header("Location: ?page=
                                     <th>ID</th>
                                     <th>Besitzer</th>
                                     <th>Position</th>
+                                    <th>Aktiv</th>
                                     <th>In Besitz</th>
-                                    <th>Garage</th>
-                                    <th>Behälter</th>
+                                    <th>Inhalt</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <?php
-                                $sql = "SELECT * FROM houses";
-                                foreach ($pdo->query($sql) as $row) {
+                                $sql = "SELECT * FROM containers WHERE pid = ?";
+                                $statement = $pdo->prepare($sql);
+                                $statement->execute(array($_GET['pid']));
+                                while($row = $statement->fetch()) {
                                     $owner = GetPlayer($row['pid']);
                                 ?>
                                 <tr>
                                     <td><?php echo $row['id']; ?></td>
                                     <td><a href="?page=support_player&id=<?php echo $owner['uid']; ?>"><?php echo utf8_encode($owner['name']); ?></a></td>
                                     <td><?php echo $row['pos']; ?></td>
+                                    <td><?php if($row['active'] == 1){echo '<span class="label label-success">Ja</span>';}else{echo '<span class="label label-danger">Nein</span>';} ?></td>
                                     <td><?php if($row['owned'] == 1){echo '<span class="label label-success">Ja</span>';}else{echo '<span class="label label-danger">Nein</span>';} ?></td>
-                                    <td><?php if($row['garage'] == 1){echo '<span class="label label-success">Ja</span>';}else{echo '<span class="label label-danger">Nein</span>';} ?></td>
-                                    <td><a href="?page=support_containers&pid=<?php echo $row['pid']; ?>" class="btn btn-primary btn-xs">Anzeigen</a></td>
+                                    <td><a href="?page=support_container&id=<?php echo $row['id']; ?>" class="btn btn-primary btn-xs">Anzeigen</a></td>
                                 </tr>
                                 <?php } ?>
                                 </tbody>

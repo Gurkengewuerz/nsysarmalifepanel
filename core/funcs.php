@@ -48,6 +48,14 @@ function GetSteamIDUser($steamid){
     return $statement->fetch();
 }
 
+function GetContainer($id){
+    global $pdo;
+    $sql = "SELECT * FROM containers WHERE id = :id LIMIT 1";
+    $statement = $pdo->prepare($sql);
+    $statement->execute(array('id' => $id));
+    return $statement->fetch();
+}
+
 function GetPlayer($steamid){
     global $pdo;
     $sql = "SELECT * FROM players WHERE pid = :sid LIMIT 1";
@@ -114,9 +122,43 @@ function UpdateRCONData($data){
 
 function InsertSteamID($steamid){
     global $pdo;
+
+    /*
+
+    $rights[0]['name'] = "ps";// Player Show
+    $rights[1]['name'] = "pe";// Player Edit
+    $rights[2]['name'] = "vs";// Vehicles Show
+    $rights[3]['name'] = "ve";// Vehicles Edit
+    $rights[4]['name'] = "hs";// Houses Show
+    $rights[5]['name'] = "he";// Houses Edit
+    $rights[6]['name'] = "gs";// Gangs Show
+    $rights[7]['name'] = "ge";// Gangs Edit
+    $rights[8]['name'] = "ws";// Wanted Show
+    $rights[9]['name'] = "we";// Wanted Edit
+    $rights[10]['name'] = "ls";// Lic Show
+    $rights[11]['name'] = "le";// Lic Edit
+    $rights[12]['name'] = "me";// Money Edit
+    $rights[13]['name'] = "ie";// Inventory Edit
+    $rights[14]['name'] = "ae";// Admin Edit
+    $rights[15]['name'] = "de";// Donor Edit
+    $rights[16]['name'] = "wc";// Whitelist Cop
+    $rights[17]['name'] = "wm";// Whitelist Medic
+    $rights[18]['name'] = "wj";// Whitelist Justice
+    $rights[19]['name'] = "pas";// Panel Support
+    $rights[20]['name'] = "pal";// Panel Logs
+    $rights[21]['name'] = "par";// Panel Rights
+    $rights[22]['name'] = "pans";// Panel Notes Show
+    $rights[23]['name'] = "pane";// Panel Notes Edit
+    $rights[24]['name'] = "pabs";// Panel Bans Show
+    $rights[25]['name'] = "pabe";// Panel Bans Edit
+    $rights[26]['name'] = "pase";// Panel Settings Edit
+
+
+    */
     $statement = $pdo->prepare("INSERT INTO panel_user (sid, locked, last_login) VALUES (:sid, :locked, :last_login)");
     if (!$statement->execute(array('sid' => $steamid, 'locked' => 0, 'last_login' => time()))) {
-        error_log($statement->errorInfo());
+        //return $statement->errorInfo();
+        //print_r($statement->errorInfo());
     }
 }
 
@@ -130,6 +172,8 @@ function SupportSteamID($steamid){
         $statement = $pdo->prepare("INSERT INTO panel_user (sid, locked, last_login) VALUES (:sid, :locked, :last_login)");
         if (!$statement->execute(array('sid' => $steamid, 'locked' => 0, 'last_login' => time()))) {
             error_log($statement->errorInfo());
+            //return $statement->errorInfo();
+            //print_r($statement->errorInfo());
         }
     }
 }
@@ -140,7 +184,10 @@ function UpdateRight($steamid, $key, $val){
     $sql = "UPDATE panel_user SET ".$key." = :val WHERE sid = :sid LIMIT 1";
     $statement = $pdo->prepare($sql);
     if (!$statement->execute(array('sid' => $steamid, 'val' => $val))) {
-        error_log($statement->errorInfo());
+        return $statement->errorInfo();
+        //print_r($statement->errorInfo());
+    }else{
+        return $sql." // ".$steamid;
     }
 }
 
@@ -170,8 +217,9 @@ function UpdateRights($steamid, $rightarray){
     $rights['admin']['edit'] = $rightarray['admin']['edit'];
     $rights['donor']['edit'] = $rightarray['donor']['edit'];
 
-    $rights['whitelist']['cop'] = $rightarray['whitelist']['cop']; // 14 Ränge
+    $rights['whitelist']['cop'] = $rightarray['whitelist']['cop']; // 14 Ränge (Cop Lvl 3-16
     $rights['whitelist']['medic'] = $rightarray['whitelist']['medic']; // 7 Ränge
+    $rights['whitelist']['justice'] = $rightarray['whitelist']['justice']; // 2 Ränge (Cop Lvl 1-2)
 
     $rights['panel']['support'] = $rightarray['panel']['support'];
     $rights['panel']['logs'] = $rightarray['panel']['logs'];
@@ -240,6 +288,12 @@ function SaveCopPlayer($id, $cop){
 function SetVehicleStatus($id, $status){
     global $pdo;
     $statement = $pdo->prepare("UPDATE vehicles SET alive = :status WHERE id = :id LIMIT 1");
+    $statement->execute(array('id' => $id, 'status' => $status));
+}
+
+function SetVehicleGarage($id, $status){
+    global $pdo;
+    $statement = $pdo->prepare("UPDATE vehicles SET active = :status WHERE id = :id LIMIT 1");
     $statement->execute(array('id' => $id, 'status' => $status));
 }
 
@@ -414,9 +468,17 @@ function ParseLicense($name){
         case "license_cop_fbi":
             $output = "FBI";
             break;
-
         case "license_med_mAir":
             $output = "Flugschein";
+            break;
+        case "license_cop_state":
+            $output = "State Police";
+            break;
+        case "license_cop_justiz":
+            $output = "Justiz";
+            break;
+        case "license_civ_taxi":
+            $output = "Taxi Lizenz";
             break;
 
 
@@ -556,6 +618,72 @@ function ParseVehicleName($vehicle){
         case "FPT_MAN_base_F":
             $return = 'HLF MAN (Fire Dep.)';
             break;
+        case "IVORY_R8":
+            $return = 'Audi R8 Coupé';
+            break;
+        case "IVORY_R8SPYDER":
+            $return = 'Audi R8 Spyder';
+            break;
+        case "shounka_a3_spr_civ_noir":
+            $return = 'Mercedes Sprinter(Schwarz)';
+            break;
+        case "shounka_a3_spr_civ_bleufonce":
+            $return = 'Mercedes Sprinter(Dunkelblau)';
+            break;
+        case "shounka_a3_spr_civ_jaune":
+            $return = 'Mercedes Sprinter(Gelb)';
+            break;
+        case "shounka_a3_spr_civ_grise":
+            $return = 'Mercedes Sprinter(Grau)';
+            break;
+        case "shounka_a3_spr_civ_orange":
+            $return = 'Mercedes Sprinter(Orange)';
+            break;
+        case "shounka_a3_spr_civ_rose":
+            $return = 'Mercedes Sprinter(Rosa)';
+            break;
+        case "shounka_a3_spr_civ_rouge":
+            $return = 'Mercedes Sprinter(Rot)';
+            break;
+        case "shounka_a3_spr_civ_violet":
+            $return = 'Mercedes Sprinter(Violett)';
+            break;
+        case "DRPG_08Suburban_P_P":
+            $return = '2006 Chevrolet Suburban PPV';
+            break;
+        case "DRPG_08Suburban_Black":
+            $return = '2008 Chevrolet Suburban(Schwarz)';
+            break;
+        case "DRPG_08Suburban_blue":
+            $return = '2008 Chevrolet Suburban(Blau)';
+            break;
+        case "DRPG_08Suburban_Orange":
+            $return = '2008 Chevrolet Suburban(Orange)';
+            break;
+        case "DRPG_08Suburban_Green":
+            $return = '2008 Chevrolet Suburban(Grün)';
+            break;
+        case "DRPG_08Suburban_Pink":
+            $return = '2008 Chevrolet Suburban(Pink)';
+            break;
+        case "DRPG_08Suburban_Purple":
+            $return = '2008 Chevrolet Suburban(Violett)';
+            break;
+        case "DRPG_08Suburban_Red":
+            $return = '2008 Chevrolet Suburban(Rot)';
+            break;
+        case "DRPG_08Suburban_White":
+            $return = '2008 Chevrolet Suburban(Weiß)';
+            break;
+        case "DRPG_08Suburban_Yellow":
+            $return = '2008 Chevrolet Suburban(Gelb)';
+            break;
+        case "DRPG_08Suburban_P_LPD":
+            $return = '2008 Chevrolet Suburban - LPD';
+            break;
+        case "DRPG_08Suburban_P_U":
+            $return = '2008 Chevrolet Suburban PPV/UM';
+            break;
         default:
             $return = $vehicle;
             break;
@@ -578,4 +706,22 @@ function AddLog($userid, $typ, $msg){
      * 3 - Lizenz bearbeitet
      */
 
+}
+
+function ParseVehicleTyp($typ){
+    switch(strtolower($typ)){
+        case "car":
+            $return = '<i class="fa fa-car" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Fahrzeug"></i>';
+            break;
+        case "air":
+            $return = '<i class="fa fa-plane" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Luftfahrzeug"></i>';
+            break;
+        case "ship":
+            $return = '<i class="fa fa-ship" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Boot"></i>';
+            break;
+        default:
+            $return = $typ;
+            break;
+    }
+    return $return;
 }

@@ -1,15 +1,18 @@
 <?php
-
-
-
+if (!isset($_POST['javadata'])) {
+    ?>
+    <!DOCTYPE html>
+    <html lang="de">
+    <?php
+}
 require_once("core/header.php");
 
-if(!isset($_SESSION['steamid'])) {
+if (!isset($_SESSION['steamid'])) {
     $page_title = "Bitte melde dich an..";
-}  else {
+} else {
     $page_title = site_name . " Panel";
-    include_once ('steamauth/userInfo.php');
-    if(!isset($_SESSION['online'])) {
+    include_once('steamauth/userInfo.php');
+    if (!isset($_SESSION['online'])) {
         if (CheckSteamID($steamprofile['steamid']) == 0) {
             InsertSteamID($steamprofile['steamid']);
             $_SESSION['user'] = GetSteamIDUser($steamprofile['steamid']);
@@ -22,8 +25,12 @@ if(!isset($_SESSION['steamid'])) {
             $_SESSION['name'] = GetPlayer($steamprofile['steamid'])['name'];
             $_SESSION['online'] = 1;
         }
+        $_SESSION['permission'] = array();
+        foreach (GetPermission($_SESSION['steamid']) as $perm) {
+            $_SESSION['permission'][$perm["permission"]] = $perm["val"];
+        }
     }
-    if(ExistPlayer($_SESSION['steamid']) == 0){
+    if (ExistPlayer($_SESSION['steamid']) == 0) {
         session_unset();
         session_destroy();
         session_start();
@@ -31,25 +38,24 @@ if(!isset($_SESSION['steamid'])) {
 }
 
 
-
-if(!isset($_SESSION['steamid'])) {
-echo "<body class='login-page animated bounceInDown login-page'>";
+if (!isset($_SESSION['steamid'])) {
+    echo "<body class='login-page animated bounceInDown login-page'>";
     echo '
     <div class="login-box">
   
   <!-- /.login-logo -->
   <div class="login-box-body text-center">
     <div class="login-logo">
-    '.site_name.'
+    ' . site_name . '
   </div>';
 
-    if(!isset($mysql_connect)) {
+    if (!isset($mysql_connect)) {
         echo '<p class="login-box-msg">Melde dich mit Steam an</p>
 
     ';
         echo loginbutton();
-    }else{
-        echo '<label>MySQL Fehler</label><div class="alert alert-danger" role="alert">'.$mysql_msg.'</div>';
+    } else {
+        echo '<label>MySQL Fehler</label><div class="alert alert-danger" role="alert">' . $mysql_msg . '</div>';
     }
     echo '
 
@@ -59,58 +65,58 @@ echo "<body class='login-page animated bounceInDown login-page'>";
     
     
     ';
-echo "</body>";
-}  else {
+    echo "</body>";
+} else {
     $player = GetPlayer($_SESSION['steamid']);
 
-    if(!isset($_GET['page'])){
-        if(GetPanelUserSteam($_SESSION['steamid'])['pas'] == 1){
+    if (!isset($_GET['page'])) {
+        if ($_SESSION['permission']['panel_support'] == 1) {
             // Support Dashboard
             $access = true;
             $_GET['page'] = "support_dashboard";
             include("pages/support_dashboard.php");
-        }elseif($player['coplevel'] >= 1){
+        } elseif ($player['coplevel'] >= 1) {
             // Cop Dashboard
             $access = true;
             $_GET['page'] = "cop_dashboard";
             include("pages/cop_dashboard.php");
-        }elseif($player['mediclevel'] >= 1){
+        } elseif ($player['mediclevel'] >= 1) {
             // Medic / FD Dashboard
             $access = true;
             $_GET['page'] = "medic_dashboard";
             include("pages/medic_dashboard.php");
-        }else{
+        } else {
             $access = true;
             $_GET['page'] = "ziv_player";
             include("pages/ziv_player.php");
         }
-    }else{
+    } else {
         $loadpage = explode("_", $_GET['page']);
         $access = false;
-        switch($loadpage[0]){
+        switch ($loadpage[0]) {
             case "cop":
-                if($player['coplevel'] >= 3){
+                if ($player['coplevel'] >= 3) {
                     // Cop Seite
                     $access = true;
-                }else{
+                } else {
                     $access = false;
                 }
                 break;
 
             case "medic":
-                if($player['mediclevel'] >= 1){
+                if ($player['mediclevel'] >= 1) {
                     // Medic / FD Dashboard
                     $access = true;
-                }else{
+                } else {
                     $access = false;
                 }
                 break;
 
             case "support":
-                if(GetPanelUserSteam($_SESSION['steamid'])['pas'] == 1){
+                if ($_SESSION['permission']['panel_support'] == 1) {
                     // Support Seite
                     $access = true;
-                }else{
+                } else {
                     $access = false;
                 }
                 break;
@@ -121,14 +127,14 @@ echo "</body>";
 
                 break;
         }
-        if($access == true){
-            if(file_exists("pages/".$_GET['page'].".php")){
-                include("pages/".$_GET['page'].".php");
-            }else{
+        if ($access == true) {
+            if (file_exists("pages/" . $_GET['page'] . ".php")) {
+                include("pages/" . $_GET['page'] . ".php");
+            } else {
                 $access = true;
                 include("pages/error.php");
             }
-        }else{
+        } else {
             $access = true;
             include("pages/error.php");
         }
@@ -142,4 +148,10 @@ echo "</body>";
 ?>
 
 <?php require_once("core/footer.php"); ?>
-</body>
+    </body>
+<?php
+if (!isset($_POST['javadata'])) {
+    ?>
+    </html>
+    <?php
+}

@@ -1,5 +1,5 @@
 <?php if(isset($access)){if(!$access == true){exit;}}else{exit;}
-if(!GetPanelUserSteam($_SESSION['steamid'])['gs'] == 1){header("Location: ?page=support_dashboard"); exit;}
+if(!$_SESSION['permission']['view_gangs'] == 1){header("Location: ?page=support_dashboard"); exit;}
 ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">

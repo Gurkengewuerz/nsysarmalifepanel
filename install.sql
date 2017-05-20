@@ -58,35 +58,20 @@ CREATE TABLE `panel_user` (
   `id` int(11) NOT NULL,
   `sid` bigint(17) NOT NULL,
   `locked` int(2) NOT NULL,
-  `last_login` int(11) NOT NULL,
-  `ps` int(2) NOT NULL,
-  `pe` int(2) NOT NULL,
-  `vs` int(2) NOT NULL,
-  `ve` int(2) NOT NULL,
-  `hs` int(2) NOT NULL,
-  `he` int(2) NOT NULL,
-  `gs` int(2) NOT NULL,
-  `ge` int(2) NOT NULL,
-  `ws` int(2) NOT NULL,
-  `we` int(2) NOT NULL,
-  `ls` int(2) NOT NULL,
-  `le` int(2) NOT NULL,
-  `me` int(2) NOT NULL,
-  `ie` int(2) NOT NULL,
-  `ae` int(2) NOT NULL,
-  `de` int(2) NOT NULL,
-  `wc` int(2) NOT NULL,
-  `wm` int(2) NOT NULL,
-  `wj` int(2) NOT NULL,
-  `pas` int(2) NOT NULL,
-  `pal` int(2) NOT NULL,
-  `par` int(2) NOT NULL,
-  `pans` int(2) NOT NULL,
-  `pane` int(2) NOT NULL,
-  `pabs` int(2) NOT NULL,
-  `pabe` int(2) NOT NULL,
-  `pase` int(2) NOT NULL,
-  `plog` int(11) DEFAULT NULL
+  `last_login` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `panel_perms`
+--
+
+CREATE TABLE IF NOT EXISTS `panel_perms` (
+  `sid` varchar(255) NOT NULL,
+  `permission` varchar(50) NOT NULL,
+  `val` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --

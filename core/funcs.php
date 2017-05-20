@@ -72,6 +72,24 @@ function GetPlayerByUID($uid){
     return $statement->fetch();
 }
 
+function GetPermission($id)
+{
+    global $pdo;
+    $sql = "SELECT permission,val FROM panel_perms WHERE sid = :id";
+    $statement = $pdo->prepare($sql);
+    $statement->execute(array('id' => $id));
+    return $statement->fetchall();
+}
+
+function GetPermissionByPanelUser($id)
+{
+    global $pdo;
+    $sql = "SELECT permission,val FROM panel_perms WHERE sid = (SELECT pid FROM players WHERE uid = :id)";
+    $statement = $pdo->prepare($sql);
+    $statement->execute(array('id' => $id));
+    return $statement->fetchall();
+}
+
 function UpdatePlayer($steamid, $field, $value){
     global $pdo;
     $statement = $pdo->prepare("UPDATE panel_user SET {$field} = :value WHERE sid = :sid LIMIT 1");
@@ -179,15 +197,25 @@ function SupportSteamID($steamid){
 }
 
 
-function UpdateRight($steamid, $key, $val){
+function UpdateRight($steamid, $key, $val)
+{
     global $pdo;
-    $sql = "UPDATE panel_user SET ".$key." = :val WHERE sid = :sid LIMIT 1";
+    $statement = $pdo->prepare("SELECT * FROM panel_perms WHERE sid = :sid AND permission = :permname LIMIT 1");
+    $statement->execute(array('sid' => $steamid, 'permname' => $key));
+    $result = $statement->fetchAll();
+
+    if (count($result) > 0) {
+        $sql = "UPDATE panel_perms SET val = :val WHERE sid = :sid AND permission = :permname";
+    } else {
+        $sql = "INSERT INTO panel_perms (sid, permission, val) VALUES (:sid, :permname, :val);";
+    }
+
     $statement = $pdo->prepare($sql);
-    if (!$statement->execute(array('sid' => $steamid, 'val' => $val))) {
+    if (!$statement->execute(array('sid' => $steamid, 'permname' => $key, 'val' => $val))) {
         return $statement->errorInfo();
         //print_r($statement->errorInfo());
-    }else{
-        return $sql." // ".$steamid;
+    } else {
+        return $sql . " // " . $steamid;
     }
 }
 

@@ -1,5 +1,5 @@
 <?php if(isset($access)){if(!$access == true){exit;}}else{exit;}
-if(!GetPanelUserSteam($_SESSION['steamid'])['hs'] == 1){header("Location: ?page=support_dashboard"); exit;}
+if(!$_SESSION['permission']['view_house'] == 1){header("Location: ?page=support_dashboard"); exit;}
 if(!isset($_GET['pid']) OR $_GET['pid'] == ""){header("Location: ?page=support_houses"); exit;}
 ?>
 <body class="hold-transition skin-blue sidebar-mini">

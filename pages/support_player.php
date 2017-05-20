@@ -1,6 +1,6 @@
 <?php if(isset($access)){if(!$access == true){exit;}}else{exit;}
 if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 0){header("Location: ?page=support_players"); exit;}else{
-    if(!GetPanelUserSteam($_SESSION['steamid'])['ps'] == 1){header("Location: ?page=support_dashboard"); exit;}
+    if(!$_SESSION['permission']['view_player'] == 1){header("Location: ?page=support_dashboard"); exit;}
     $player = GetPlayerByUID($_GET['id']);
     if(CheckSteamID($player['pid']) == 0){
         InsertSteamID($player['pid']);
@@ -60,7 +60,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                     <b>Gefängnis Status</b> <a class="pull-right"><?php if($player['arrested'] == 1){echo 'Eingesperrt';}else{echo 'Frei';} ?></a>
                                 </li>
                             </ul>
-                            <?php if(GetPanelUserSteam($_SESSION['steamid'])['pe'] == 1){ ?><button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#player_edit">Bearbeiten</button><?php } ?>
+                            <?php if($_SESSION['permission']['edit_player'] == 1){ ?><button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#player_edit">Bearbeiten</button><?php } ?>
                             <a class="btn btn-warning btn-block" href="http://webinterface.playerindex.de/default.aspx?id=<?php echo $player['pid']; ?>" target="_blank">Auf Playerindex Ban prüfen</a>
                             <a class="btn btn-default btn-block" href="http://steamcommunity.com/profiles/<?php echo $player['pid']; ?>" target="_blank">Steam Profil öffnen</a>
                         </div>
@@ -72,14 +72,14 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#inventory" data-toggle="tab" aria-expanded="false">Inventar</a></li>
-                            <?php if(GetPanelUserSteam($_SESSION['steamid'])['ls'] == 1){ ?><li class=""><a href="#licenses" data-toggle="tab" aria-expanded="true">Lizenzen</a></li><?php } ?>
-                            <?php if(GetPanelUserSteam($_SESSION['steamid'])['vs'] == 1){ ?><li class=""><a href="#vehicles" data-toggle="tab" aria-expanded="false">Fahrzeuge</a></li><?php } ?>
-                            <?php if(GetPanelUserSteam($_SESSION['steamid'])['hs'] == 1){ ?><li class=""><a href="#houses" data-toggle="tab" aria-expanded="false">Häuser</a></li><?php } ?>
-                            <?php if(GetPanelUserSteam($_SESSION['steamid'])['pans'] == 1){ ?><li class=""><a href="#notes" data-toggle="tab" aria-expanded="false">Notizen</a></li><?php } ?>
-                            <?php if(GetPanelUserSteam($_SESSION['steamid'])['par'] == 1){ ?><li class=""><a href="#permissions" data-toggle="tab" aria-expanded="false">Rechte</a></li><?php } ?>
+                            <?php if($_SESSION['permission']['view_licence'] == 1){ ?><li class=""><a href="#licenses" data-toggle="tab" aria-expanded="true">Lizenzen</a></li><?php } ?>
+                            <?php if($_SESSION['permission']['view_vehicle'] == 1){ ?><li class=""><a href="#vehicles" data-toggle="tab" aria-expanded="false">Fahrzeuge</a></li><?php } ?>
+                            <?php if($_SESSION['permission']['view_house'] == 1){ ?><li class=""><a href="#houses" data-toggle="tab" aria-expanded="false">Häuser</a></li><?php } ?>
+                            <?php if($_SESSION['permission']['view_notice'] == 1){ ?><li class=""><a href="#notes" data-toggle="tab" aria-expanded="false">Notizen</a></li><?php } ?>
+                            <?php if($_SESSION['permission']['panel_right'] == 1){ ?><li class=""><a href="#permissions" data-toggle="tab" aria-expanded="false">Rechte</a></li><?php } ?>
                         </ul>
                         <div class="tab-content">
-                            <?php if(GetPanelUserSteam($_SESSION['steamid'])['ls'] == 1){ ?><div class="tab-pane" id="licenses">
+                            <?php if($_SESSION['permission']['view_licence'] == 1){ ?><div class="tab-pane" id="licenses">
                                 <b>Spieler</b>
                                 <div class="well">
                                     <?php
@@ -140,7 +140,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                 </div>
                             </div>
                             <!-- /.tab-pane -->
-                            <?php if(GetPanelUserSteam($_SESSION['steamid'])['hs'] == 1){ ?>
+                            <?php if($_SESSION['permission']['view_house'] == 1){ ?>
                             <div class="tab-pane" id="houses">
                                 <table class="table table-responsive table-bordered table-striped table-hover">
                                     <thead>
@@ -196,7 +196,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                             </div>
                             <!-- /.tab-pane -->
 
-                            <?php if(GetPanelUserSteam($_SESSION['steamid'])['pans'] == 1){ ?>
+                            <?php if($_SESSION['permission']['view_notice'] == 1){ ?>
                             <div class="tab-pane" id="notes">
                                 <table id="NoteTable" class="table table-responsive table-bordered table-striped table-hover">
                                     <thead>
@@ -217,60 +217,67 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                     <?php } ?>
                                     </tbody>
                                 </table>
-                                <?php if(GetPanelUserSteam($_SESSION['steamid'])['pane'] == 1){ ?><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#player_note_add">Notiz erstellen</button><?php } ?>
+                                <?php if($_SESSION['permission']['edit_notice'] == 1){ ?><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#player_note_add">Notiz erstellen</button><?php } ?>
                             </div>
                             <!-- /.tab-pane -->
                             <?php } ?>
 
-                            <?php if(GetPanelUserSteam($_SESSION['steamid'])['par'] == 1){ ?>
+                            <?php if($_SESSION['permission']['panel_right'] == 1){ ?>
                             <div class="tab-pane" id="permissions">
                                 <div class="box box-solid">
 
                                     <div class="box-body">
                                         <?php
-                                            $rechte = GetRights($_GET['id']);
+                                            $rechte = GetPermissionByPanelUser($_GET['id']);
                                             function RightStatus($value){
-                                                if($value == 0){
-                                                    echo "btn-danger";
-                                                }else{
+                                                global $rechte;
+
+                                                $found = false;
+                                                foreach ($rechte as $perm) {
+                                                    if($perm["permission"] == $value && $perm["val"] == 1) {
+                                                        $found = true;
+                                                    }
+                                                }
+                                                if($found) {
                                                     echo "btn-success";
+                                                } else {
+                                                    echo "btn-danger";
                                                 }
                                             }
                                             $PanelUser = GetPanelUserSteam($player['pid']);
 
-                                            /* <?php RightStatus($rechte['']['']); ?> */
-                                        ?> 
+                                        ?>
                                         <div class="col-md-4">
                                             <h1>Spieler</h1>
                                             <div class="col-md-6">
-                                                <button onclick="SwitchPermission(this, 'ps')" class="btn <?php RightStatus($PanelUser['ps']); ?> btn-block">Spieler Anschauen</button></br>
-                                                <button onclick="SwitchPermission(this, 'vs')" class="btn <?php RightStatus($PanelUser['vs']); ?> btn-block">Fahrzeuge Anschauen</button></br>
-                                                <button onclick="SwitchPermission(this, 'hs')" class="btn <?php RightStatus($PanelUser['hs']); ?> btn-block">Häuser Anschauen</button></br>
-                                                <button onclick="SwitchPermission(this, 'gs')" class="btn <?php RightStatus($PanelUser['gs']); ?> btn-block">Gangs Anschauen</button></br>
-                                                <button onclick="SwitchPermission(this, 'ls')" class="btn <?php RightStatus($PanelUser['ls']); ?> btn-block">Lizenzen Anschauen</button></br>
-                                                <button onclick="SwitchPermission(this, 'pans')" class="btn <?php RightStatus($PanelUser['pans']); ?> btn-block">Notizen Anschauen</button></br>
+                                                <button onclick="SwitchPermission(this, 'view_player')" class="btn <?php RightStatus('view_player'); ?> btn-block">Spieler Anschauen</button></br>
+                                                <button onclick="SwitchPermission(this, 'view_vehicle')" class="btn <?php RightStatus('view_vehicle'); ?> btn-block">Fahrzeuge Anschauen</button></br>
+                                                <button onclick="SwitchPermission(this, 'view_house')" class="btn <?php RightStatus('view_house'); ?> btn-block">Häuser Anschauen</button></br>
+                                                <button onclick="SwitchPermission(this, 'view_gangs')" class="btn <?php RightStatus('view_gangs'); ?> btn-block">Gangs Anschauen</button></br>
+                                                <button onclick="SwitchPermission(this, 'view_licence')" class="btn <?php RightStatus('view_licence'); ?> btn-block">Lizenzen Anschauen</button></br>
+                                                <button onclick="SwitchPermission(this, 'view_notice')" class="btn <?php RightStatus('view_notice'); ?> btn-block">Notizen Anschauen</button></br>
                                             </div>
                                             <div class="col-md-6">
-                                                <button onclick="SwitchPermission(this, 'pe')" class="btn <?php RightStatus($PanelUser['pe']); ?> btn-block">Spieler Bearbeiten</button></br>
-                                                <button onclick="SwitchPermission(this, 've')" class="btn <?php RightStatus($PanelUser['ve']); ?> btn-block">Fahrzeuge Bearbeiten</button></br>
-                                                <button disabled onclick="SwitchPermission(this, 'he')" class="btn <?php RightStatus($PanelUser['he']); ?> btn-block">Häuser Bearbeiten</button></br>
-                                                <button disabled onclick="SwitchPermission(this, 'ge')" class="btn <?php RightStatus($PanelUser['ge']); ?> btn-block">Gangs Bearbeiten</button></br>
-                                                <button onclick="SwitchPermission(this, 'le')" class="btn <?php RightStatus($PanelUser['le']); ?> btn-block">Lizenzen Bearbeiten</button></br>
-                                                <button onclick="SwitchPermission(this, 'pane')" class="btn <?php RightStatus($PanelUser['pane']); ?> btn-block">Notizen Bearbeiten</button></br>
+                                                <button onclick="SwitchPermission(this, 'edit_player')" class="btn <?php RightStatus('edit_player'); ?> btn-block">Spieler Bearbeiten</button></br>
+                                                <button onclick="SwitchPermission(this, 'edit_vehicle')" class="btn <?php RightStatus('edit_vehicle'); ?> btn-block">Fahrzeuge Bearbeiten</button></br>
+                                                <button onclick="SwitchPermission(this, 'edit_house')" class="btn <?php RightStatus('edit_house'); ?> btn-block">Häuser Bearbeiten</button></br>
+                                                <button onclick="SwitchPermission(this, 'edit_gang')" class="btn <?php RightStatus('edit_gang'); ?> btn-block">Gangs Bearbeiten</button></br>
+                                                <button onclick="SwitchPermission(this, 'edit_licence')" class="btn <?php RightStatus('edit_licence'); ?> btn-block">Lizenzen Bearbeiten</button></br>
+                                                <button onclick="SwitchPermission(this, 'edit_notice')" class="btn <?php RightStatus('edit_notice'); ?> btn-block">Notizen Bearbeiten</button></br>
                                             </div>
 
                                         </div>
                                         <div class="col-md-4">
                                             <h1>Whitelistung Fraktionen</h1>
-                                            <button onclick="SwitchPermission(this, 'wc', '')" class="btn <?php RightStatus($PanelUser['wc']); ?> btn-block">Polizei</button></br>
-                                            <button onclick="SwitchPermission(this, 'wj')" class="btn <?php RightStatus($PanelUser['wj']); ?> btn-block">Justiz</button></br>
-                                            <button onclick="SwitchPermission(this, 'wm')" class="btn <?php RightStatus($PanelUser['wm']); ?> btn-block">EMS</button></br>
+                                            <button onclick="SwitchPermission(this, 'whitelist_cop')" class="btn <?php RightStatus('whitelist_cop'); ?> btn-block">Polizei</button></br>
+                                            <button onclick="SwitchPermission(this, 'whitelist_justice')" class="btn <?php RightStatus('whitelist_justice'); ?> btn-block">Justiz</button></br>
+                                            <button onclick="SwitchPermission(this, 'whitelist_medic')" class="btn <?php RightStatus('whitelist_medic'); ?> btn-block">EMS</button></br>
                                         </div>
                                         <div class="col-md-4">
                                             <h1>Panel</h1>
-                                            <button onclick="SwitchPermission(this, 'par')" class="btn <?php RightStatus($PanelUser['par']); ?> btn-block">Rechte</button></br>
-                                            <button onclick="SwitchPermission(this, 'pas')" class="btn <?php RightStatus($PanelUser['pas']); ?> btn-block">Panel Support</button></br>
-                                            <button onclick="SwitchPermission(this, 'plog')" class="btn <?php RightStatus($PanelUser['plog']); ?> btn-block">Panel Logs</button></br>
+                                            <button onclick="SwitchPermission(this, 'panel_right')" class="btn <?php RightStatus('panel_right'); ?> btn-block">Rechte</button></br>
+                                            <button onclick="SwitchPermission(this, 'panel_support')" class="btn <?php RightStatus('panel_support'); ?> btn-block">Panel Support</button></br>
+                                            <button onclick="SwitchPermission(this, 'panel_log')" class="btn <?php RightStatus('panel_log'); ?> btn-block">Panel Logs</button></br>
                                         </div>
                                     </div>
                                     <!-- /.box-body -->
@@ -292,7 +299,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     </div>
 <!-- ./wrapper -->
 
-<?php if(GetPanelUserSteam($_SESSION['steamid'])['pe'] == 1){ ?>
+<?php if($_SESSION['permission']['edit_player'] == 1){ ?>
 <!-- modal -->
 <div class="modal fade modal-primary" id="player_edit" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
     <div class="modal-dialog modal-sm" role="document">
@@ -365,7 +372,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     </div>
 </div>
 <?php } ?>
-<?php if(GetPanelUserSteam($_SESSION['steamid'])['pane'] == 1){ ?>
+<?php if($_SESSION['permission']['edit_notice'] == 1){ ?>
 <!-- modal -->
 <div class="modal fade modal-primary" id="player_note_add" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
     <div class="modal-dialog" role="document">
@@ -424,7 +431,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     }
 
     function RepairVehicle(id, status){
-        <?php if(GetPanelUserSteam($_SESSION['steamid'])['ve'] == 1){ ?>
+        <?php if($_SESSION['permission']['edit_vehicle'] == 1){ ?>
         $.ajax({
             type: 'POST',
             url: 'index.php',
@@ -446,7 +453,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     }
 
     function GarageVehicle(id, status){
-        <?php if(GetPanelUserSteam($_SESSION['steamid'])['ve'] == 1){ ?>
+        <?php if($_SESSION['permission']['edit_vehicle'] == 1){ ?>
         $.ajax({
             type: 'POST',
             url: 'index.php',
@@ -468,7 +475,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     }
 
     function SwitchLicense(btn, lic, type){
-        <?php if(GetPanelUserSteam($_SESSION['steamid'])['le'] == 1){ ?>
+        <?php if($_SESSION['permission']['edit_licence'] == 1){ ?>
         $.ajax({
             type: 'POST',
             url: 'index.php',
@@ -491,7 +498,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     }
 
     function CreateNote(){
-        <?php if(GetPanelUserSteam($_SESSION['steamid'])['pane'] == 1){ ?>
+        <?php if($_SESSION['permission']['edit_notice'] == 1){ ?>
         $("#player_note_add").modal("hide");
         // Notiz zu einem Spieler hinzufügen
         var content = $("#notecontent").val();
@@ -517,7 +524,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
         <?php } ?>
     }
 
-    <?php if(GetPanelUserSteam($_SESSION['steamid'])['par'] == 1){ ?>
+    <?php if($_SESSION['permission']['panel_right'] == 1){ ?>
     function SwitchPermission(btn, field1){
 
         var field2 = 0;

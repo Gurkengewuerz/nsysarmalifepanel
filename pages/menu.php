@@ -185,7 +185,7 @@
             <li<?php if($_GET['page'] == "ziv_player"){echo ' class="active"';} ?>><a href="?page=ziv_player"><i class="fa fa-dashboard"></i> <span>Übersicht</span></a></li>
             <?php
                 $mplayer = GetPlayer($_SESSION['steamid']);
-                if(GetPanelUserSteam($_SESSION['steamid'])['pas'] == 1){include("menu/support.php"); }
+                if($_SESSION['permission']['panel_support'] == 1){include("menu/support.php"); }
                 if($mplayer['mediclevel'] >= 1){include("menu/medic.php"); }
                 if($mplayer['coplevel'] >= 1){include("menu/cop.php"); }
             ?>

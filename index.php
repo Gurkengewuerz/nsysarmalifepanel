@@ -77,7 +77,7 @@ if (!isset($_SESSION['steamid'])) {
 	}
 	
     if (!isset($_GET['page'])) {
-        if (isset($_SESSION['permission']['panel_support']) && isset($_SESSION['permission']['panel_support']) && $_SESSION['permission']['panel_support'] == 1) {
+        if (isset($_SESSION['permission']['panel_support']) && $_SESSION['permission']['panel_support'] == 1) {
             // Support Dashboard
             $access = true;
             $_GET['page'] = "support_dashboard";
@@ -120,7 +120,7 @@ if (!isset($_SESSION['steamid'])) {
                 break;
 
             case "support":
-                if (isset($_SESSION['permission']['panel_support']) && isset($_SESSION['permission']['panel_support']) && $_SESSION['permission']['panel_support'] == 1) {
+                if (isset($_SESSION['permission']['panel_support']) && $_SESSION['permission']['panel_support'] == 1) {
                     // Support Seite
                     $access = true;
                 } else {

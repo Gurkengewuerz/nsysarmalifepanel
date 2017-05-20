@@ -1,6 +1,6 @@
 <?php if(isset($access)){if(!$access == true){exit;}}else{exit;}
 if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 0){header("Location: ?page=medic_players"); exit;}else{
-    if(!$_SESSION['permission']['whitelist_medic'] == 1){header("Location: ?page=medic_dashboard"); exit;}
+    if(!isset($_SESSION['permission']['whitelist_medic']) && $_SESSION['permission']['whitelist_medic'] == 1){header("Location: ?page=medic_dashboard"); exit;}
     $player = GetPlayerByUID($_GET['id']);
     if(CheckSteamID($player['pid']) == 0){
         InsertSteamID($player['pid']);
@@ -46,7 +46,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                     <b>Medic Level</b> <a class="pull-right" id="anzeigemedic"><?php echo $player['mediclevel']; ?></a>
                                 </li>
                             </ul>
-                            <?php if($_SESSION['permission']['whitelist_medic'] == 1){ ?><button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#player_edit">Bearbeiten</button><?php } ?>
+                            <?php if(isset($_SESSION['permission']['whitelist_medic']) && $_SESSION['permission']['whitelist_medic'] == 1){ ?><button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#player_edit">Bearbeiten</button><?php } ?>
                             <a class="btn btn-default btn-block" href="http://steamcommunity.com/profiles/<?php echo $player['pid']; ?>" target="_blank">Steam Profil öffnen</a>
                         </div>
                         <!-- /.box-body -->

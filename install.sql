@@ -69,6 +69,7 @@ CREATE TABLE `panel_user` (
 --
 
 CREATE TABLE IF NOT EXISTS `panel_perms` (
+  `id` int(11) NOT NULL,
   `sid` varchar(255) NOT NULL,
   `permission` varchar(50) NOT NULL,
   `val` tinyint(1) NOT NULL
@@ -77,6 +78,12 @@ CREATE TABLE IF NOT EXISTS `panel_perms` (
 --
 -- Indizes der exportierten Tabellen
 --
+
+--
+-- Indizes für die Tabelle `panel_logs`
+--
+ALTER TABLE `panel_perms`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indizes für die Tabelle `panel_logs`

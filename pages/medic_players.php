@@ -1,5 +1,5 @@
 <?php if(isset($access)){if(!$access == true){exit;}}else{exit;}
-if(!$_SESSION['permission']['whitelist_medic'] == 1){header("Location: ?page=medic_dashboard"); exit;}
+if(!isset($_SESSION['permission']['whitelist_medic']) && $_SESSION['permission']['whitelist_medic'] == 1){header("Location: ?page=medic_dashboard"); exit;}
 ?>
 <body class="hold-transition skin-red sidebar-mini">
 <div class="wrapper">

@@ -1,5 +1,5 @@
 <?php if(isset($access)){if(!$access == true){exit;}}else{exit;}
-if(!$_SESSION['permission']['view_vehicle'] == 1){header("Location: ?page=support_dashboard"); exit;}
+if(!isset($_SESSION['permission']['view_vehicle']) && $_SESSION['permission']['view_vehicle'] == 1){header("Location: ?page=support_dashboard"); exit;}
 ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -78,7 +78,7 @@ if(!$_SESSION['permission']['view_vehicle'] == 1){header("Location: ?page=suppor
 
 <script type="application/javascript">
     function RepairVehicle(id, status){
-        <?php if($_SESSION['permission']['edit_vehicle'] == 1){ ?>
+        <?php if(isset($_SESSION['permission']['edit_vehicle']) && $_SESSION['permission']['edit_vehicle'] == 1){ ?>
         $.ajax({
             type: 'POST',
             url: 'index.php',
@@ -99,7 +99,7 @@ if(!$_SESSION['permission']['view_vehicle'] == 1){header("Location: ?page=suppor
         <?php } ?>
     }
     function GarageVehicle(id, status){
-        <?php if($_SESSION['permission']['edit_vehicle'] == 1){ ?>
+        <?php if(isset($_SESSION['permission']['edit_vehicle']) && $_SESSION['permission']['edit_vehicle'] == 1){ ?>
         $.ajax({
             type: 'POST',
             url: 'index.php',

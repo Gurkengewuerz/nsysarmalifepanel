@@ -1,6 +1,6 @@
 <?php if(isset($access)){if(!$access == true){exit;}}else{exit;}
 if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 0){header("Location: ?page=support_players"); exit;}else{
-    if(!$_SESSION['permission']['view_player'] == 1){header("Location: ?page=support_dashboard"); exit;}
+    if(!isset($_SESSION['permission']['view_player']) && $_SESSION['permission']['view_player'] == 1){header("Location: ?page=support_dashboard"); exit;}
     $player = GetPlayerByUID($_GET['id']);
     if(CheckSteamID($player['pid']) == 0){
         InsertSteamID($player['pid']);
@@ -60,7 +60,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                     <b>Gefängnis Status</b> <a class="pull-right"><?php if($player['arrested'] == 1){echo 'Eingesperrt';}else{echo 'Frei';} ?></a>
                                 </li>
                             </ul>
-                            <?php if($_SESSION['permission']['edit_player'] == 1){ ?><button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#player_edit">Bearbeiten</button><?php } ?>
+                            <?php if(isset($_SESSION['permission']['edit_player']) && $_SESSION['permission']['edit_player'] == 1){ ?><button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#player_edit">Bearbeiten</button><?php } ?>
                             <a class="btn btn-warning btn-block" href="http://webinterface.playerindex.de/default.aspx?id=<?php echo $player['pid']; ?>" target="_blank">Auf Playerindex Ban prüfen</a>
                             <a class="btn btn-default btn-block" href="http://steamcommunity.com/profiles/<?php echo $player['pid']; ?>" target="_blank">Steam Profil öffnen</a>
                         </div>
@@ -72,14 +72,14 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#inventory" data-toggle="tab" aria-expanded="false">Inventar</a></li>
-                            <?php if($_SESSION['permission']['view_licence'] == 1){ ?><li class=""><a href="#licenses" data-toggle="tab" aria-expanded="true">Lizenzen</a></li><?php } ?>
-                            <?php if($_SESSION['permission']['view_vehicle'] == 1){ ?><li class=""><a href="#vehicles" data-toggle="tab" aria-expanded="false">Fahrzeuge</a></li><?php } ?>
-                            <?php if($_SESSION['permission']['view_house'] == 1){ ?><li class=""><a href="#houses" data-toggle="tab" aria-expanded="false">Häuser</a></li><?php } ?>
-                            <?php if($_SESSION['permission']['view_notice'] == 1){ ?><li class=""><a href="#notes" data-toggle="tab" aria-expanded="false">Notizen</a></li><?php } ?>
-                            <?php if($_SESSION['permission']['panel_right'] == 1){ ?><li class=""><a href="#permissions" data-toggle="tab" aria-expanded="false">Rechte</a></li><?php } ?>
+                            <?php if(isset($_SESSION['permission']['view_licence']) && $_SESSION['permission']['view_licence'] == 1){ ?><li class=""><a href="#licenses" data-toggle="tab" aria-expanded="true">Lizenzen</a></li><?php } ?>
+                            <?php if(isset($_SESSION['permission']['view_vehicle']) && $_SESSION['permission']['view_vehicle'] == 1){ ?><li class=""><a href="#vehicles" data-toggle="tab" aria-expanded="false">Fahrzeuge</a></li><?php } ?>
+                            <?php if(isset($_SESSION['permission']['view_house']) && $_SESSION['permission']['view_house'] == 1){ ?><li class=""><a href="#houses" data-toggle="tab" aria-expanded="false">Häuser</a></li><?php } ?>
+                            <?php if(isset($_SESSION['permission']['view_notice']) && $_SESSION['permission']['view_notice'] == 1){ ?><li class=""><a href="#notes" data-toggle="tab" aria-expanded="false">Notizen</a></li><?php } ?>
+                            <?php if(isset($_SESSION['permission']['panel_right']) && $_SESSION['permission']['panel_right'] == 1){ ?><li class=""><a href="#permissions" data-toggle="tab" aria-expanded="false">Rechte</a></li><?php } ?>
                         </ul>
                         <div class="tab-content">
-                            <?php if($_SESSION['permission']['view_licence'] == 1){ ?><div class="tab-pane" id="licenses">
+                            <?php if(isset($_SESSION['permission']['view_licence']) && $_SESSION['permission']['view_licence'] == 1){ ?><div class="tab-pane" id="licenses">
                                 <b>Spieler</b>
                                 <div class="well">
                                     <?php
@@ -140,7 +140,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                 </div>
                             </div>
                             <!-- /.tab-pane -->
-                            <?php if($_SESSION['permission']['view_house'] == 1){ ?>
+                            <?php if(isset($_SESSION['permission']['view_house']) && $_SESSION['permission']['view_house'] == 1){ ?>
                             <div class="tab-pane" id="houses">
                                 <table class="table table-responsive table-bordered table-striped table-hover">
                                     <thead>
@@ -196,7 +196,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                             </div>
                             <!-- /.tab-pane -->
 
-                            <?php if($_SESSION['permission']['view_notice'] == 1){ ?>
+                            <?php if(isset($_SESSION['permission']['view_notice']) && $_SESSION['permission']['view_notice'] == 1){ ?>
                             <div class="tab-pane" id="notes">
                                 <table id="NoteTable" class="table table-responsive table-bordered table-striped table-hover">
                                     <thead>
@@ -217,12 +217,12 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
                                     <?php } ?>
                                     </tbody>
                                 </table>
-                                <?php if($_SESSION['permission']['edit_notice'] == 1){ ?><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#player_note_add">Notiz erstellen</button><?php } ?>
+                                <?php if(isset($_SESSION['permission']['edit_notice']) && $_SESSION['permission']['edit_notice'] == 1){ ?><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#player_note_add">Notiz erstellen</button><?php } ?>
                             </div>
                             <!-- /.tab-pane -->
                             <?php } ?>
 
-                            <?php if($_SESSION['permission']['panel_right'] == 1){ ?>
+                            <?php if(isset($_SESSION['permission']['panel_right']) && $_SESSION['permission']['panel_right'] == 1){ ?>
                             <div class="tab-pane" id="permissions">
                                 <div class="box box-solid">
 
@@ -299,7 +299,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     </div>
 <!-- ./wrapper -->
 
-<?php if($_SESSION['permission']['edit_player'] == 1){ ?>
+<?php if(isset($_SESSION['permission']['edit_player']) && $_SESSION['permission']['edit_player'] == 1){ ?>
 <!-- modal -->
 <div class="modal fade modal-primary" id="player_edit" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
     <div class="modal-dialog modal-sm" role="document">
@@ -372,7 +372,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     </div>
 </div>
 <?php } ?>
-<?php if($_SESSION['permission']['edit_notice'] == 1){ ?>
+<?php if(isset($_SESSION['permission']['edit_notice']) && $_SESSION['permission']['edit_notice'] == 1){ ?>
 <!-- modal -->
 <div class="modal fade modal-primary" id="player_note_add" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
     <div class="modal-dialog" role="document">
@@ -431,7 +431,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     }
 
     function RepairVehicle(id, status){
-        <?php if($_SESSION['permission']['edit_vehicle'] == 1){ ?>
+        <?php if(isset($_SESSION['permission']['edit_vehicle']) && $_SESSION['permission']['edit_vehicle'] == 1){ ?>
         $.ajax({
             type: 'POST',
             url: 'index.php',
@@ -453,7 +453,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     }
 
     function GarageVehicle(id, status){
-        <?php if($_SESSION['permission']['edit_vehicle'] == 1){ ?>
+        <?php if(isset($_SESSION['permission']['edit_vehicle']) && $_SESSION['permission']['edit_vehicle'] == 1){ ?>
         $.ajax({
             type: 'POST',
             url: 'index.php',
@@ -475,7 +475,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     }
 
     function SwitchLicense(btn, lic, type){
-        <?php if($_SESSION['permission']['edit_licence'] == 1){ ?>
+        <?php if(isset($_SESSION['permission']['edit_licence']) && $_SESSION['permission']['edit_licence'] == 1){ ?>
         $.ajax({
             type: 'POST',
             url: 'index.php',
@@ -498,7 +498,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
     }
 
     function CreateNote(){
-        <?php if($_SESSION['permission']['edit_notice'] == 1){ ?>
+        <?php if(isset($_SESSION['permission']['edit_notice']) && $_SESSION['permission']['edit_notice'] == 1){ ?>
         $("#player_note_add").modal("hide");
         // Notiz zu einem Spieler hinzufügen
         var content = $("#notecontent").val();
@@ -524,7 +524,7 @@ if(!isset($_GET['id']) or $_GET['id'] == "" or ExistPlayerByUID($_GET['id']) == 
         <?php } ?>
     }
 
-    <?php if($_SESSION['permission']['panel_right'] == 1){ ?>
+    <?php if(isset($_SESSION['permission']['panel_right']) && $_SESSION['permission']['panel_right'] == 1){ ?>
     function SwitchPermission(btn, field1){
 
         var field2 = 0;

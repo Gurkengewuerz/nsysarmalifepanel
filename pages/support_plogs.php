@@ -1,5 +1,5 @@
 <?php if(isset($access)){if(!$access == true){exit;}}else{exit;}
-if(!$_SESSION['permission']['panel_log'] == 1){header("Location: ?page=support_dashboard"); exit;}
+if(!isset($_SESSION['permission']['panel_log']) && $_SESSION['permission']['panel_log'] == 1){header("Location: ?page=support_dashboard"); exit;}
 ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">

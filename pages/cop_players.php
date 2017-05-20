@@ -1,5 +1,5 @@
 <?php if(isset($access)){if(!$access == true){exit;}}else{exit;}
-if(!$_SESSION['permission']['whitelist_cop'] == 1){header("Location: ?page=cop_dashboard"); exit;}
+if(!isset($_SESSION['permission']['whitelist_cop']) && $_SESSION['permission']['whitelist_cop'] == 1){header("Location: ?page=cop_dashboard"); exit;}
 ?>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">

@@ -25,10 +25,8 @@ if (!isset($_SESSION['steamid'])) {
             $_SESSION['name'] = GetPlayer($steamprofile['steamid'])['name'];
             $_SESSION['online'] = 1;
         }
-        $_SESSION['permission'] = array();
-        foreach (GetPermission($_SESSION['steamid']) as $perm) {
-            $_SESSION['permission'][$perm["permission"]] = $perm["val"];
-        }
+		$_SESSION['permission'] = array();
+		$_SESSION['permission']['time'] = 0;
     }
     if (ExistPlayer($_SESSION['steamid']) == 0) {
         session_unset();
@@ -67,10 +65,19 @@ if (!isset($_SESSION['steamid'])) {
     ';
     echo "</body>";
 } else {
-    $player = GetPlayer($_SESSION['steamid']);
+	$player = GetPlayer($_SESSION['steamid']);
 
+	if(time() - $_SESSION['permission']['time'] >= 300) {
+		$_SESSION['permission'] = array();
+		foreach (GetPermission($_SESSION['steamid']) as $perm) {
+			$_SESSION['permission'][$perm["permission"]] = $perm["val"];
+		}
+		
+		$_SESSION['permission']['time'] = time();
+	}
+	
     if (!isset($_GET['page'])) {
-        if ($_SESSION['permission']['panel_support'] == 1) {
+        if (isset($_SESSION['permission']['panel_support']) && isset($_SESSION['permission']['panel_support']) && $_SESSION['permission']['panel_support'] == 1) {
             // Support Dashboard
             $access = true;
             $_GET['page'] = "support_dashboard";
@@ -113,7 +120,7 @@ if (!isset($_SESSION['steamid'])) {
                 break;
 
             case "support":
-                if ($_SESSION['permission']['panel_support'] == 1) {
+                if (isset($_SESSION['permission']['panel_support']) && isset($_SESSION['permission']['panel_support']) && $_SESSION['permission']['panel_support'] == 1) {
                     // Support Seite
                     $access = true;
                 } else {
